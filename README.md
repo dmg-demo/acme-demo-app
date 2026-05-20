@@ -60,8 +60,8 @@ Repo-level **Variables** (Settings → Secrets and variables → Actions → Var
 
 | Variable | Example |
 |---|---|
-| `JF_URL` | `https://<TENANT>.jfrog.io` |
-| `JF_HOST` | `<TENANT>.jfrog.io` |
+| `JF_URL` | `https://dylanmo.jfrog.io` |
+| `JF_HOST` | `dylanmo.jfrog.io` |
 | `RB_SIGNING_KEY` | `acme-prod` |
 
 No secrets needed — OIDC handles auth.
@@ -100,6 +100,6 @@ No secrets needed — OIDC handles auth.
 
 ## Open placeholders
 
-- `<TENANT>.jfrog.io` — fill in your soleng tenant
+- `dylanmo.jfrog.io` — soleng tenant
 - OIDC provider name `github-acme` — match whatever you create in Platform Admin
 - `acme-prod` signing key — match the GPG key you create

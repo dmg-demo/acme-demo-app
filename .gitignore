@@ -21,3 +21,8 @@ target/
 
 # Logs
 *.log
+
+# GPG keys
+*.asc
+*.gpg
+*.pgp

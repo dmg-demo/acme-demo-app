@@ -102,7 +102,7 @@ Administration → **General Management → Identity & Access → Integrations �
 
 - [ ] Provider Name: `github-acme`  *(must match `oidc-provider-name` in workflows)*
 - [ ] Provider URL: `https://token.actions.githubusercontent.com`
-- [ ] Audience: `<TENANT>.jfrog.io`
+- [ ] Audience: `dylanmo.jfrog.io`
 - [ ] Add **Identity Mapping**:
   - Claims JSON: `{"repository": "<github-org>/<repo>", "ref": "refs/heads/main"}`
   - Token scope: project `acme-storefront`, role `Project Admin` (demo simplicity)
@@ -116,8 +116,8 @@ Loosen the `ref` claim if you want feature branches to publish too.
 Push `~/claude-workspace/acme-demo/` to a GitHub repo, then in
 **Settings → Secrets and variables → Actions → Variables**:
 
-- [ ] `JF_URL` = `https://<TENANT>.jfrog.io`
-- [ ] `JF_HOST` = `<TENANT>.jfrog.io`
+- [ ] `JF_URL` = `https://dylanmo.jfrog.io`
+- [ ] `JF_HOST` = `dylanmo.jfrog.io`
 - [ ] `RB_SIGNING_KEY` = `acme-prod`
 
 No secrets needed — OIDC handles auth.

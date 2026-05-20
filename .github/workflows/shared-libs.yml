@@ -11,7 +11,7 @@ on:
         required: false
 
 env:
-  JF_URL: ${{ vars.JF_URL }}              # https://<TENANT>.jfrog.io
+  JF_URL: ${{ vars.JF_URL }}              # https://dylanmo.jfrog.io
   JF_PROJECT: acme-storefront
   RB_NAME: shared-libs-RB
   SIGNING_KEY: ${{ vars.RB_SIGNING_KEY }} # GPG key name configured in the platform
