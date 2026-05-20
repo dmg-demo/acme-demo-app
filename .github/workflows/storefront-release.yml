@@ -1,0 +1,88 @@
+name: storefront parent release bundle
+
+# Manually triggered. Assembles a nested RBv2 from existing child RB versions.
+# This is metadata-only — no compilation. Runs in seconds.
+
+on:
+  workflow_dispatch:
+    inputs:
+      storefront_version:
+        description: 'Parent Acme-Storefront-RB version (e.g. 1.0.0)'
+        required: true
+      shared_libs_version:
+        description: 'shared-libs-RB child version'
+        required: true
+      api_version:
+        description: 'service-api-RB child version'
+        required: true
+      payments_version:
+        description: 'service-payments-RB child version'
+        required: true
+      frontend_version:
+        description: 'service-frontend-RB child version'
+        required: true
+      promote_to:
+        description: 'Optional: promote on success (DEV/QA/PROD or blank)'
+        required: false
+        default: ''
+
+env:
+  JF_URL: ${{ vars.JF_URL }}
+  JF_PROJECT: acme-storefront
+  PARENT_RB: Acme-Storefront-RB
+  SIGNING_KEY: ${{ vars.RB_SIGNING_KEY }}
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    permissions: { id-token: write, contents: read }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ env.JF_URL }}
+          JF_PROJECT: ${{ env.JF_PROJECT }}
+        with:
+          oidc-provider-name: github-acme
+
+      - name: Assemble parent release bundle from children
+        run: |
+          jf release-bundle-create "$PARENT_RB" "${{ github.event.inputs.storefront_version }}" \
+            --release-bundles="shared-libs-RB:${{ github.event.inputs.shared_libs_version }},service-api-RB:${{ github.event.inputs.api_version }},service-payments-RB:${{ github.event.inputs.payments_version }},service-frontend-RB:${{ github.event.inputs.frontend_version }}" \
+            --signing-key="$SIGNING_KEY" \
+            --project="$JF_PROJECT"
+
+      - name: Generate stub rolled-up release notes
+        run: |
+          mkdir -p release-notes-out
+          cat > release-notes-out/storefront-release-notes.md <<EOF
+          # Acme Storefront ${{ github.event.inputs.storefront_version }}
+
+          Assembled from:
+          - shared-libs-RB ${{ github.event.inputs.shared_libs_version }}
+          - service-api-RB ${{ github.event.inputs.api_version }}
+          - service-payments-RB ${{ github.event.inputs.payments_version }}
+          - service-frontend-RB ${{ github.event.inputs.frontend_version }}
+
+          _(In production this would roll up evidence from each child RB.)_
+          EOF
+
+      - name: Attach rolled-up release notes evidence to parent
+        run: |
+          jf evd create \
+            --release-bundle="$PARENT_RB" \
+            --release-bundle-version="${{ github.event.inputs.storefront_version }}" \
+            --predicate=release-notes-out/storefront-release-notes.md \
+            --predicate-type=https://acme.dev/release-notes-rollup/v1 \
+            --key="$SIGNING_KEY" \
+            --project="$JF_PROJECT"
+
+      - name: Promote (optional)
+        if: ${{ github.event.inputs.promote_to != '' }}
+        run: |
+          jf release-bundle-promote "$PARENT_RB" \
+            "${{ github.event.inputs.storefront_version }}" \
+            "${{ github.event.inputs.promote_to }}" \
+            --signing-key="$SIGNING_KEY" \
+            --project="$JF_PROJECT"

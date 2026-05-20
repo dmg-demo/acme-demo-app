@@ -1,0 +1,70 @@
+name: service-frontend build & release bundle
+
+on:
+  push:
+    branches: [main]
+    paths: ['service-frontend/**', '.github/workflows/frontend.yml']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version (else uses VERSION file)'
+        required: false
+
+env:
+  JF_URL: ${{ vars.JF_URL }}
+  JF_PROJECT: acme-storefront
+  RB_NAME: service-frontend-RB
+  IMAGE_REPO: frontend-docker-rel-local
+  SIGNING_KEY: ${{ vars.RB_SIGNING_KEY }}
+
+jobs:
+  build-and-bundle:
+    runs-on: ubuntu-latest
+    permissions: { id-token: write, contents: read }
+    defaults: { run: { working-directory: service-frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ env.JF_URL }}
+          JF_PROJECT: ${{ env.JF_PROJECT }}
+        with:
+          oidc-provider-name: github-acme
+
+      - name: Resolve version
+        id: ver
+        run: |
+          V="${{ github.event.inputs.version }}"
+          [ -z "$V" ] && V=$(cat VERSION)
+          echo "version=$V" >>"$GITHUB_OUTPUT"
+
+      - name: Docker login
+        run: jf docker-login
+
+      - name: Build & push Docker image
+        run: |
+          IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-frontend:${{ steps.ver.outputs.version }}"
+          jf docker build -t "$IMG" .
+          jf docker push "$IMG" \
+            --build-name=service-frontend --build-number=${{ github.run_number }}
+          jf rt bce service-frontend ${{ github.run_number }}
+          jf rt bp  service-frontend ${{ github.run_number }}
+
+      - name: Create Release Bundle v2
+        run: |
+          jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}" \
+            --builds="service-frontend/${{ github.run_number }}" \
+            --signing-key="$SIGNING_KEY" \
+            --project="$JF_PROJECT"
+
+      - name: Attach release notes evidence (stub)
+        run: |
+          jf evd create \
+            --release-bundle="$RB_NAME" \
+            --release-bundle-version="${{ steps.ver.outputs.version }}" \
+            --predicate=./release-notes.md \
+            --predicate-type=https://acme.dev/release-notes/v1 \
+            --key="$SIGNING_KEY" \
+            --project="$JF_PROJECT"
