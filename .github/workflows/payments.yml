@@ -47,7 +47,16 @@ jobs:
         id: ver
         run: |
           V="${{ github.event.inputs.version }}"
-          [ -z "$V" ] && V=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          if [ -z "$V" ]; then
+            V=$(awk '
+              /<artifactId>service-payments<\/artifactId>/ { found=1; next }
+              found && /<version>/ {
+                sub(/.*<version>/, ""); sub(/<\/version>.*/, ""); print; exit
+              }
+            ' pom.xml)
+          fi
+          [ -z "$V" ] && { echo "ERROR: could not resolve version from pom.xml" >&2; exit 1; }
+          echo "Resolved version: $V"
           echo "version=$V" >>"$GITHUB_OUTPUT"
 
       - name: Build jar & publish build-info (maven)
