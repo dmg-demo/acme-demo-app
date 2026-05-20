@@ -34,7 +34,12 @@ jobs:
           oidc-provider-name: github-acme   # configure in JFrog Platform → OIDC
 
       - name: Configure Maven via jf cli
-        run: jf mvn-config --repo-resolve-releases mvn-virtual --repo-deploy-releases shared-libs-mvn-rel-local
+        run: |
+          jf mvn-config \
+            --repo-resolve-releases mvn-virtual \
+            --repo-resolve-snapshots mvn-virtual \
+            --repo-deploy-releases shared-libs-mvn-rel-local \
+            --repo-deploy-snapshots shared-libs-mvn-rel-local
 
       - name: Resolve version
         id: ver
