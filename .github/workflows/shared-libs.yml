@@ -66,8 +66,6 @@ jobs:
 
       - name: Create Release Bundle v2
         run: |
-          jf ds release-bundle-delete "$RB_NAME" "${{ steps.ver.outputs.version }}" \
-            --project="$JF_PROJECT" --quiet 2>/dev/null || true
           echo '{"builds":[{"name":"shared-libs","number":"${{ github.run_number }}","project":"acme-storefront"}]}' > /tmp/builds.json
           jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}" \
             --builds=/tmp/builds.json \
@@ -76,10 +74,11 @@ jobs:
 
       - name: Attach release notes evidence (stub)
         run: |
+          jq -Rs '{content: .}' ./release-notes.md > /tmp/predicate.json
           jf evd create \
             --release-bundle="$RB_NAME" \
             --release-bundle-version="${{ steps.ver.outputs.version }}" \
-            --predicate=./release-notes.md \
+            --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
             --key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
