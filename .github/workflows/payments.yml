@@ -78,7 +78,7 @@ jobs:
 
       - name: Create Release Bundle v2
         run: |
-          jf release-bundle-delete "$RB_NAME" "${{ steps.ver.outputs.version }}" \
+          jf ds release-bundle-delete "$RB_NAME" "${{ steps.ver.outputs.version }}" \
             --project="$JF_PROJECT" --quiet 2>/dev/null || true
           echo '{"builds":[{"name":"service-payments","number":"${{ github.run_number }}","project":"acme-storefront"}]}' > /tmp/builds.json
           jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}" \
