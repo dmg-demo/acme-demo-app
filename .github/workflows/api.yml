@@ -78,7 +78,7 @@ jobs:
 
       - name: Create Release Bundle v2
         run: |
-          echo '{"builds":[{"buildName":"service-api","buildNumber":"${{ github.run_number }}"}]}' > /tmp/builds.json
+          echo '{"builds":[{"name":"service-api","number":"${{ github.run_number }}"}]}' > /tmp/builds.json
           jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}" \
             --builds=/tmp/builds.json \
             --signing-key="$SIGNING_KEY" \
