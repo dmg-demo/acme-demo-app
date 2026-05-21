@@ -65,7 +65,35 @@ Administration → **Platform Configuration → Keys → Signing Keys → Add Ke
 
 ---
 
-## 5. Define lifecycle stages
+## 5. Generate and upload the evidence signing key
+
+The workflows sign evidence with an ECDSA P-256 private key (`keys/acme-evidence.key`).
+The matching public key must be registered in Artifactory so the platform can verify signatures.
+
+Use the JFrog CLI to generate the key pair **and** upload the public key in one step
+(requires an admin token — OIDC is not sufficient for key upload):
+
+```bash
+cd /path/to/acme-demo
+jf evd generate-key-pair \
+  --key-file-path ./keys \
+  --key-file-name acme-evidence \
+  --key-alias acme-evidence \
+  --server-id <SERVER_ID>
+```
+
+This creates:
+- `keys/acme-evidence.key` — private key (used by workflows, already committed)
+- `keys/acme-evidence.pub` — public key (committed for reference)
+
+And registers `acme-evidence` as a trusted key in Artifactory automatically.
+
+> **Note:** The "Public Keys" tab under Administration → Security → Keys Management
+> is for GPG/PGP Release Bundle signing keys only. Do **not** use it for the evidence key.
+
+---
+
+## 6. Define lifecycle stages
 
 Administration → **Lifecycle Management → Stages**
 
@@ -83,7 +111,7 @@ Map each repo's environment property:
 
 ---
 
-## 6. Xray policy (optional but worth showing)
+## 7. Xray policy (optional but worth showing)
 
 Xray → **Watches → New Watch**
 
@@ -96,7 +124,7 @@ This is what makes the "single gate at the parent" story tangible during demo.
 
 ---
 
-## 7. OIDC integration for GitHub Actions
+## 8. OIDC integration for GitHub Actions
 
 Administration → **General Management → Identity & Access → Integrations → OIDC**
 
@@ -111,7 +139,7 @@ Loosen the `ref` claim if you want feature branches to publish too.
 
 ---
 
-## 8. GitHub repository configuration
+## 9. GitHub repository configuration
 
 Push `~/claude-workspace/acme-demo/` to a GitHub repo, then in
 **Settings → Secrets and variables → Actions → Variables**:
@@ -124,7 +152,7 @@ No secrets needed — OIDC handles auth.
 
 ---
 
-## 9. Seed the initial bundles (one-time)
+## 10. Seed the initial bundles (one-time)
 
 To have something to assemble the first time:
 
@@ -141,7 +169,7 @@ To have something to assemble the first time:
 
 ---
 
-## 10. First parent assembly
+## 11. First parent assembly
 
 - [ ] Actions → **storefront parent release bundle** → Run workflow:
   - `storefront_version`: `1.0.0`

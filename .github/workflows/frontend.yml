@@ -60,13 +60,24 @@ jobs:
             --signing-key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
 
-      - name: Attach release notes evidence (stub)
+      - name: Record latest RB version
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
+          gh variable set FRONTEND_RB_VERSION \
+            --body "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            --repo "${{ github.repository }}"
+
+      - name: Attach release notes evidence (stub)
+        env:
+          EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
+        run: |
+          echo "$EVIDENCE_SIGNING_KEY" > /tmp/acme-evidence.key
           jq -Rs '{content: .}' ./release-notes.md > /tmp/predicate.json
           jf evd create \
             --release-bundle="$RB_NAME" \
             --release-bundle-version="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
-            --key="$SIGNING_KEY" \
+            --key=/tmp/acme-evidence.key \
             --project="$JF_PROJECT"
