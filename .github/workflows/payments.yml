@@ -65,7 +65,7 @@ jobs:
             --build-name=service-payments --build-number=${{ github.run_number }}
 
       - name: Docker login
-        run: jf docker-login
+        run: echo "$JFROG_CLI_ACCESS_TOKEN" | docker login "${{ vars.JF_HOST }}" -u token --password-stdin
 
       - name: Build & push Docker image
         run: |
