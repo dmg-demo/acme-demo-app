@@ -79,7 +79,7 @@ jobs:
       - name: Create Release Bundle v2
         run: |
           echo '{"builds":[{"name":"service-api","number":"${{ github.run_number }}","project":"acme-storefront"}]}' > /tmp/builds.json
-          jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}" \
+          jf release-bundle-create "$RB_NAME" "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --builds=/tmp/builds.json \
             --signing-key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
@@ -89,7 +89,7 @@ jobs:
           jq -Rs '{content: .}' ./release-notes.md > /tmp/predicate.json
           jf evd create \
             --release-bundle="$RB_NAME" \
-            --release-bundle-version="${{ steps.ver.outputs.version }}" \
+            --release-bundle-version="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
             --key="$SIGNING_KEY" \
