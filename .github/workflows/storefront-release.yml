@@ -65,7 +65,7 @@ jobs:
       - name: Assemble parent release bundle from children
         run: |
           jf release-bundle-create "$PARENT_RB" "${{ github.event.inputs.storefront_version }}" \
-            --release-bundles="shared-libs-RB:${{ steps.versions.outputs.shared }},service-api-RB:${{ steps.versions.outputs.api }},service-payments-RB:${{ steps.versions.outputs.payments }},service-frontend-RB:${{ steps.versions.outputs.frontend }}" \
+            --source-type-release-bundles="name=shared-libs-RB, version=${{ steps.versions.outputs.shared }}; name=service-api-RB, version=${{ steps.versions.outputs.api }}; name=service-payments-RB, version=${{ steps.versions.outputs.payments }}; name=service-frontend-RB, version=${{ steps.versions.outputs.frontend }}" \
             --signing-key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
 
