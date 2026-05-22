@@ -16,6 +16,9 @@ target/
 # VS Code
 .vscode/
 
+# JFrog
+.jfrog/
+
 # macOS
 .DS_Store
 
