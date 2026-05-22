@@ -129,6 +129,15 @@ jobs:
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
+          jf evd create \
+            --application-key="$AT_APP_KEY" \
+            --application-version="${{ github.event.inputs.storefront_version }}" \
+            --predicate=/tmp/predicate.json \
+            --predicate-type=https://acme.dev/release-notes-rollup/v1 \
+            --markdown=/tmp/release-notes.md \
+            --key=/tmp/acme-evidence.key \
+            --key-alias=acme-evidence \
+            --project="$JF_PROJECT"
 
       - name: Register AppTrust application version
         run: |

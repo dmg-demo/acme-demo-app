@@ -95,6 +95,15 @@ jobs:
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
+          jf evd create \
+            --build-name=service-frontend \
+            --build-number=${{ github.run_number }} \
+            --predicate=/tmp/predicate.json \
+            --predicate-type=https://acme.dev/release-notes/v1 \
+            --markdown=./release-notes.md \
+            --key=/tmp/acme-evidence.key \
+            --key-alias=acme-evidence \
+            --project="$JF_PROJECT"
 
       - name: Register AppTrust application version
         run: |
