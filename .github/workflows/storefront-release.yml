@@ -31,6 +31,7 @@ env:
   JF_PROJECT: acme-storefront
   PARENT_RB: Acme-Storefront-RB
   SIGNING_KEY: ${{ vars.RB_SIGNING_KEY }}
+  AT_APP_KEY: acme-storefront
 
 jobs:
   assemble:
@@ -128,6 +129,19 @@ jobs:
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
+
+      - name: Register AppTrust application version
+        run: |
+          jf apptrust version-create "$AT_APP_KEY" \
+            "${{ github.event.inputs.storefront_version }}" \
+            --source-type-release-bundles \
+              "name=$PARENT_RB, version=${{ github.event.inputs.storefront_version }}" \
+            --tag "storefront-release"
+
+          jf apptrust version-promote "$AT_APP_KEY" \
+            "${{ github.event.inputs.storefront_version }}" \
+            DEV \
+            --sync true
 
       - name: Promote (optional)
         if: ${{ github.event.inputs.promote_to != '' }}

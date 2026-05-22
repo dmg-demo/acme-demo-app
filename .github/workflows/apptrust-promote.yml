@@ -1,0 +1,48 @@
+name: AppTrust — Promote / Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Acme-Storefront version to promote (e.g. 1.0.0)'
+        required: true
+      stage:
+        description: 'Target stage'
+        required: true
+        type: choice
+        options: [QA, PROD]
+
+env:
+  JF_URL: ${{ vars.JF_URL }}
+  JF_PROJECT: acme-storefront
+  AT_APP_KEY: acme-storefront
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    permissions: { id-token: write, contents: read }
+    steps:
+      - uses: jfrog/boost@v0
+        with:
+          accept_terms: yes
+
+      - uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ env.JF_URL }}
+          JF_PROJECT: ${{ env.JF_PROJECT }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          oidc-provider-name: github-acme
+
+      - name: Promote to ${{ github.event.inputs.stage }}
+        run: |
+          jf apptrust version-promote "$AT_APP_KEY" \
+            "${{ github.event.inputs.version }}" \
+            "${{ github.event.inputs.stage }}" \
+            --sync true
+
+      - name: Release (PROD only)
+        if: github.event.inputs.stage == 'PROD'
+        run: |
+          jf apptrust version-release "$AT_APP_KEY" \
+            "${{ github.event.inputs.version }}"

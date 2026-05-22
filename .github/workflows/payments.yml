@@ -16,6 +16,7 @@ env:
   RB_NAME: service-payments-RB
   IMAGE_REPO: payments-docker-rel-local
   SIGNING_KEY: ${{ vars.RB_SIGNING_KEY }}
+  AT_APP_KEY: acme-service-payments
 
 jobs:
   build-and-bundle:
@@ -121,3 +122,16 @@ jobs:
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
+
+      - name: Register AppTrust application version
+        run: |
+          jf apptrust version-create "$AT_APP_KEY" \
+            "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            --source-type-builds \
+              "name=service-payments, id=${{ github.run_number }}" \
+            --tag "$RB_NAME"
+
+          jf apptrust version-promote "$AT_APP_KEY" \
+            "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            DEV \
+            --sync true
