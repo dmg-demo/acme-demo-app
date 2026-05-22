@@ -67,6 +67,9 @@ jobs:
           jf rt bce shared-libs ${{ github.run_number }}
           jf rt bp  shared-libs ${{ github.run_number }}
 
+      - name: Scan build
+        run: jf build-scan shared-libs ${{ github.run_number }} --project="$JF_PROJECT"
+
       - name: Create Release Bundle v2
         run: |
           echo '{"builds":[{"name":"shared-libs","number":"${{ github.run_number }}","project":"acme-storefront"}]}' > /tmp/builds.json

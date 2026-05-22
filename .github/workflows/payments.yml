@@ -74,6 +74,7 @@ jobs:
         run: |
           IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-payments:${{ steps.ver.outputs.version }}"
           jf docker build -t "$IMG" .
+          jf docker scan "$IMG"
           jf docker push "$IMG" \
             --build-name=service-payments --build-number=${{ github.run_number }}
           jf rt bce service-payments ${{ github.run_number }}
