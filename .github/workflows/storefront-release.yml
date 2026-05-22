@@ -134,8 +134,8 @@ jobs:
         run: |
           jf apptrust version-create "$AT_APP_KEY" \
             "${{ github.event.inputs.storefront_version }}" \
-            --source-type-release-bundles \
-              "name=$PARENT_RB, version=${{ github.event.inputs.storefront_version }}, project-key=$JF_PROJECT" \
+            --source-type-application-versions \
+              "application-key=acme-shared-libs, version=${{ steps.versions.outputs.shared }}; application-key=acme-service-api, version=${{ steps.versions.outputs.api }}; application-key=acme-service-payments, version=${{ steps.versions.outputs.payments }}; application-key=acme-service-frontend, version=${{ steps.versions.outputs.frontend }}" \
             --tag "storefront-release"
 
           jf apptrust version-promote "$AT_APP_KEY" \
