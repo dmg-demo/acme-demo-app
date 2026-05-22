@@ -28,7 +28,7 @@ jobs:
       - name: Pre-install shared-libs into local Maven cache
         run: mvn install -f shared-libs/pom.xml -DskipTests -B
 
-      - uses: jfrog/frogbot@v3
+      - uses: jfrog/frogbot@v2
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
