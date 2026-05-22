@@ -99,23 +99,23 @@ jobs:
 
           # Human-readable markdown (rendered in the JFrog platform evidence viewer)
           {
-            printf "# Acme Storefront ${{ github.event.inputs.storefront_version }} — Release Notes\n\n"
-            printf "**Release Date:** $(date -u +%Y-%m-%d)\n\n"
-            printf "---\n\n"
-            printf "## Components\n\n"
-            printf "| Component | Release Bundle | Version |\n"
-            printf "|-----------|---------------|----------|\n"
-            printf "| shared-libs | shared-libs-RB | ${{ steps.versions.outputs.shared }} |\n"
-            printf "| service-api | service-api-RB | ${{ steps.versions.outputs.api }} |\n"
-            printf "| service-payments | service-payments-RB | ${{ steps.versions.outputs.payments }} |\n"
-            printf "| service-frontend | service-frontend-RB | ${{ steps.versions.outputs.frontend }} |\n\n"
-            printf "---\n\n"
+            printf '# Acme Storefront %s — Release Notes\n\n' "${{ github.event.inputs.storefront_version }}"
+            printf '**Release Date:** %s\n\n' "$(date -u +%Y-%m-%d)"
+            printf '%s\n\n' '---'
+            printf '## Components\n\n'
+            printf '| Component | Release Bundle | Version |\n'
+            printf '|-----------|---------------|----------|\n'
+            printf '| shared-libs | shared-libs-RB | %s |\n' "${{ steps.versions.outputs.shared }}"
+            printf '| service-api | service-api-RB | %s |\n' "${{ steps.versions.outputs.api }}"
+            printf '| service-payments | service-payments-RB | %s |\n' "${{ steps.versions.outputs.payments }}"
+            printf '| service-frontend | service-frontend-RB | %s |\n\n' "${{ steps.versions.outputs.frontend }}"
+            printf '%s\n\n' '---'
             cat shared-libs/release-notes.md
-            printf "\n\n---\n\n"
+            printf '\n\n%s\n\n' '---'
             cat service-api/release-notes.md
-            printf "\n\n---\n\n"
+            printf '\n\n%s\n\n' '---'
             cat service-payments/release-notes.md
-            printf "\n\n---\n\n"
+            printf '\n\n%s\n\n' '---'
             cat service-frontend/release-notes.md
           } > /tmp/release-notes.md
 
