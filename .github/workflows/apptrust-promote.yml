@@ -39,7 +39,7 @@ jobs:
           jf apptrust version-promote "$AT_APP_KEY" \
             "${{ github.event.inputs.version }}" \
             "${{ github.event.inputs.stage }}" \
-            --sync true
+            --sync=true
 
       - name: Release (PROD only)
         if: github.event.inputs.stage == 'PROD'

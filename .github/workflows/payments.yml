@@ -134,4 +134,4 @@ jobs:
           jf apptrust version-promote "$AT_APP_KEY" \
             "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             DEV \
-            --sync true
+            --sync=true

@@ -141,7 +141,7 @@ jobs:
           jf apptrust version-promote "$AT_APP_KEY" \
             "${{ github.event.inputs.storefront_version }}" \
             DEV \
-            --sync true
+            --sync=true
 
       - name: Promote (optional)
         if: ${{ github.event.inputs.promote_to != '' }}
