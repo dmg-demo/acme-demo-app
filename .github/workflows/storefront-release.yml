@@ -136,8 +136,7 @@ jobs:
             --predicate-type=https://acme.dev/release-notes-rollup/v1 \
             --markdown=/tmp/release-notes.md \
             --key=/tmp/acme-evidence.key \
-            --key-alias=acme-evidence \
-            --project="$JF_PROJECT"
+            --key-alias=acme-evidence
 
       - name: Register AppTrust application version
         run: |
