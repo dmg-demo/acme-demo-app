@@ -49,7 +49,7 @@ jobs:
       - name: Build & push Docker image
         run: |
           IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-frontend:${{ steps.ver.outputs.version }}"
-          boost jf docker build -t "$IMG" .
+          jf docker build -t "$IMG" .
           jf docker push "$IMG" \
             --build-name=service-frontend --build-number=${{ github.run_number }}
           jf rt bce service-frontend ${{ github.run_number }}

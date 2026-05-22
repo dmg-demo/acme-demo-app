@@ -62,7 +62,7 @@ jobs:
 
       - name: Build, deploy & publish build-info
         run: |
-          boost jf mvn clean deploy -DskipTests \
+          jf mvn clean deploy -DskipTests \
             --build-name=shared-libs --build-number=${{ github.run_number }}
           jf rt bce shared-libs ${{ github.run_number }}
           jf rt bp  shared-libs ${{ github.run_number }}

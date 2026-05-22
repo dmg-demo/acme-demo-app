@@ -64,7 +64,7 @@ jobs:
 
       - name: Build jar & publish build-info (maven)
         run: |
-          boost jf mvn clean package -DskipTests \
+          jf mvn clean package -DskipTests \
             --build-name=service-payments --build-number=${{ github.run_number }}
 
       - name: Docker login
@@ -73,7 +73,7 @@ jobs:
       - name: Build & push Docker image
         run: |
           IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-payments:${{ steps.ver.outputs.version }}"
-          boost jf docker build -t "$IMG" .
+          jf docker build -t "$IMG" .
           jf docker push "$IMG" \
             --build-name=service-payments --build-number=${{ github.run_number }}
           jf rt bce service-payments ${{ github.run_number }}
