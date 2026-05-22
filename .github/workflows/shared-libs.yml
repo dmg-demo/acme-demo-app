@@ -45,6 +45,9 @@ jobs:
             --repo-deploy-releases shared-libs-mvn-rel-local \
             --repo-deploy-snapshots shared-libs-mvn-rel-local
 
+      - name: Curation Audit
+        run: jf ca
+
       - name: Resolve version
         id: ver
         run: |

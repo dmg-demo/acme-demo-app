@@ -37,6 +37,9 @@ jobs:
         with:
           oidc-provider-name: github-acme
 
+      - name: Curation Audit
+        run: jf ca
+
       - name: Resolve version
         id: ver
         run: |

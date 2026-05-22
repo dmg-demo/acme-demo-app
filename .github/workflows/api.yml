@@ -47,6 +47,9 @@ jobs:
             --repo-deploy-releases api-mvn-rel-local \
             --repo-deploy-snapshots api-mvn-rel-local
 
+      - name: Curation Audit
+        run: jf ca
+
       - name: Resolve version
         id: ver
         run: |
