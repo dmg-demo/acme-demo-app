@@ -99,6 +99,7 @@ jobs:
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes-rollup/v1 \
             --key=/tmp/acme-evidence.key \
+            --key-alias=acme-evidence \
             --project="$JF_PROJECT"
 
       - name: Promote (optional)

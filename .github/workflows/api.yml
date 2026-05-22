@@ -108,4 +108,5 @@ jobs:
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
             --key=/tmp/acme-evidence.key \
+            --key-alias=acme-evidence \
             --project="$JF_PROJECT"
