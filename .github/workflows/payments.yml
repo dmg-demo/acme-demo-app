@@ -30,7 +30,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { java-version: '17', distribution: 'temurin' }
-      - uses: docker/setup-buildx-action@v3
 
       - uses: jfrog/setup-jfrog-cli@v4
         env:
