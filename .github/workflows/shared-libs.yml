@@ -23,6 +23,8 @@ jobs:
     defaults: { run: { working-directory: shared-libs } }
     steps:
       - uses: jfrog/boost@v0
+        with:
+          accept_terms: yes
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { java-version: '17', distribution: 'temurin' }
