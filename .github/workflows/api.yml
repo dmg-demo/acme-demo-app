@@ -83,7 +83,7 @@ jobs:
 
       - name: Build & push Docker image, capture build-info
         run: |
-          IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-api:${{ steps.ver.outputs.version }}"
+          IMG="${{ vars.JF_HOST }}/$IMAGE_REPO/service-api:${{ steps.ver.outputs.version }}-${{ github.run_number }}"
           jf docker build -t "$IMG" .
           jf docker scan "$IMG"
           jf docker push "$IMG" \
