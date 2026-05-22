@@ -19,7 +19,7 @@ env:
 jobs:
   build-and-bundle:
     runs-on: ubuntu-latest
-    permissions: { id-token: write, contents: read }
+    permissions: { id-token: write, contents: read, security-events: write }
     defaults: { run: { working-directory: shared-libs } }
     steps:
       - uses: jfrog/boost@v0
@@ -33,6 +33,7 @@ jobs:
         env:
           JF_URL: ${{ env.JF_URL }}
           JF_PROJECT: ${{ env.JF_PROJECT }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-acme   # configure in JFrog Platform → OIDC
 
