@@ -72,27 +72,32 @@ jobs:
             --signing-key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
 
-      - name: Generate stub rolled-up release notes
-        run: |
-          mkdir -p release-notes-out
-          cat > release-notes-out/storefront-release-notes.md <<EOF
-          # Acme Storefront ${{ github.event.inputs.storefront_version }}
-
-          Assembled from:
-          - shared-libs-RB ${{ steps.versions.outputs.shared }}
-          - service-api-RB ${{ steps.versions.outputs.api }}
-          - service-payments-RB ${{ steps.versions.outputs.payments }}
-          - service-frontend-RB ${{ steps.versions.outputs.frontend }}
-
-          _(In production this would roll up evidence from each child RB.)_
-          EOF
-
       - name: Attach rolled-up release notes evidence to parent
         env:
           EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
         run: |
           echo "$EVIDENCE_SIGNING_KEY" > /tmp/acme-evidence.key
-          jq -Rs '{content: .}' release-notes-out/storefront-release-notes.md > /tmp/predicate.json
+          jq -n \
+            --arg version "${{ github.event.inputs.storefront_version }}" \
+            --arg date "$(date -u +%Y-%m-%d)" \
+            --arg shared  "${{ steps.versions.outputs.shared }}" \
+            --arg api      "${{ steps.versions.outputs.api }}" \
+            --arg payments "${{ steps.versions.outputs.payments }}" \
+            --arg frontend "${{ steps.versions.outputs.frontend }}" \
+            --rawfile shared_notes   shared-libs/release-notes.md \
+            --rawfile api_notes      service-api/release-notes.md \
+            --rawfile payments_notes service-payments/release-notes.md \
+            --rawfile frontend_notes service-frontend/release-notes.md \
+            '{
+              storefront_version: $version,
+              release_date: $date,
+              components: [
+                { name: "shared-libs",      release_bundle: "shared-libs-RB",      version: $shared,   release_notes: $shared_notes },
+                { name: "service-api",      release_bundle: "service-api-RB",      version: $api,      release_notes: $api_notes },
+                { name: "service-payments", release_bundle: "service-payments-RB", version: $payments, release_notes: $payments_notes },
+                { name: "service-frontend", release_bundle: "service-frontend-RB", version: $frontend, release_notes: $frontend_notes }
+              ]
+            }' > /tmp/predicate.json
           jf evd create \
             --release-bundle="$PARENT_RB" \
             --release-bundle-version="${{ github.event.inputs.storefront_version }}" \
