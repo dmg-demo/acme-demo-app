@@ -38,6 +38,8 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-acme
+
+      - name: Configure Maven via jf cli
         run: |
           jf mvn-config \
             --repo-resolve-releases mvn-virtual \

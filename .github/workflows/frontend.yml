@@ -36,6 +36,8 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-acme
+
+      - name: Resolve version
         id: ver
         run: |
           V="${{ github.event.inputs.version }}"
