@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: { id-token: write, contents: read }
     steps:
+      - uses: jfrog/boost@v0
       - uses: actions/checkout@v4
 
       - uses: jfrog/setup-jfrog-cli@v4
