@@ -48,6 +48,13 @@ jobs:
             --repo-deploy-releases payments-mvn-rel-local \
             --repo-deploy-snapshots payments-mvn-rel-local
 
+      - name: Update shared-libs dependency version
+        run: |
+          mvn versions:set-property \
+            -Dproperty=shared-libs.version \
+            -DnewVersion="${{ vars.SHARED_LIBS_ARTIFACT_VERSION }}" \
+            -DgenerateBackupPoms=false
+
       - name: Curation Audit
         run: jf ca
 

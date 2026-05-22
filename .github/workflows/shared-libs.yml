@@ -65,6 +65,12 @@ jobs:
           echo "Resolved version: $V"
           echo "version=$V" >>"$GITHUB_OUTPUT"
 
+      - name: Set unique artifact version
+        run: |
+          mvn versions:set \
+            -DnewVersion="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            -DgenerateBackupPoms=false
+
       - name: Build, deploy & publish build-info
         run: |
           jf mvn clean deploy -DskipTests \
@@ -88,6 +94,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           gh variable set SHARED_LIBS_RB_VERSION \
+            --body "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            --repo "${{ github.repository }}"
+          gh variable set SHARED_LIBS_ARTIFACT_VERSION \
             --body "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --repo "${{ github.repository }}"
 
