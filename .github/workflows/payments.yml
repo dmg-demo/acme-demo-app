@@ -83,7 +83,7 @@ jobs:
           jf docker push "$IMG" \
             --build-name=service-payments --build-number=${{ github.run_number }}
           jf rt bce service-payments ${{ github.run_number }}
-          jf rt bp  service-payments ${{ github.run_number }}
+          jf rt bp  service-payments ${{ github.run_number }} --project="$JF_PROJECT"
 
       - name: Scan build
         run: jf build-scan service-payments ${{ github.run_number }} --project="$JF_PROJECT"

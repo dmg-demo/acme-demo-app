@@ -70,7 +70,7 @@ jobs:
           jf mvn clean deploy -DskipTests \
             --build-name=shared-libs --build-number=${{ github.run_number }}
           jf rt bce shared-libs ${{ github.run_number }}
-          jf rt bp  shared-libs ${{ github.run_number }}
+          jf rt bp  shared-libs ${{ github.run_number }} --project="$JF_PROJECT"
 
       - name: Scan build
         run: jf build-scan shared-libs ${{ github.run_number }} --project="$JF_PROJECT"
