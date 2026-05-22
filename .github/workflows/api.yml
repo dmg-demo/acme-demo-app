@@ -136,8 +136,8 @@ jobs:
         run: |
           jf apptrust version-create "$AT_APP_KEY" \
             "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
-            --source-type-release-bundles \
-              "name=$RB_NAME, version=${{ steps.ver.outputs.version }}-${{ github.run_number }}, project-key=$JF_PROJECT" \
+            --source-type-builds \
+              "name=service-api, number=${{ github.run_number }}, project-key=$JF_PROJECT" \
             --tag "$RB_NAME"
 
           jf apptrust version-promote "$AT_APP_KEY" \
