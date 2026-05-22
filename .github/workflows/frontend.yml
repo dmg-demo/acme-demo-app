@@ -37,9 +37,6 @@ jobs:
         with:
           oidc-provider-name: github-acme
 
-      - name: Curation Audit
-        run: jf ca
-
       - name: Resolve version
         id: ver
         run: |
@@ -59,6 +56,9 @@ jobs:
             --build-name=service-frontend --build-number=${{ github.run_number }}
           jf rt bce service-frontend ${{ github.run_number }}
           jf rt bp  service-frontend ${{ github.run_number }}
+
+      - name: Scan build
+        run: jf build-scan service-frontend ${{ github.run_number }} --project="$JF_PROJECT"
 
       - name: Create Release Bundle v2
         run: |

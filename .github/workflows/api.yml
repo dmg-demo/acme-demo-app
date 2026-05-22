@@ -84,6 +84,9 @@ jobs:
           jf rt bce service-api ${{ github.run_number }}
           jf rt bp  service-api ${{ github.run_number }}
 
+      - name: Scan build
+        run: jf build-scan service-api ${{ github.run_number }} --project="$JF_PROJECT"
+
       - name: Create Release Bundle v2
         run: |
           echo '{"builds":[{"name":"service-api","number":"${{ github.run_number }}","project":"acme-storefront"}]}' > /tmp/builds.json
