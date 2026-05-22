@@ -73,6 +73,19 @@ jobs:
             --signing-key="$SIGNING_KEY" \
             --project="$JF_PROJECT"
 
+      - name: Register AppTrust application version
+        run: |
+          jf apptrust version-create "$AT_APP_KEY" \
+            "${{ github.event.inputs.storefront_version }}" \
+            --source-type-application-versions \
+              "application-key=acme-shared-libs, version=${{ steps.versions.outputs.shared }}; application-key=acme-service-api, version=${{ steps.versions.outputs.api }}; application-key=acme-service-payments, version=${{ steps.versions.outputs.payments }}; application-key=acme-service-frontend, version=${{ steps.versions.outputs.frontend }}" \
+            --tag "storefront-release"
+
+          jf apptrust version-promote "$AT_APP_KEY" \
+            "${{ github.event.inputs.storefront_version }}" \
+            DEV \
+            --sync=true
+
       - name: Attach rolled-up release notes evidence to parent
         env:
           EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
@@ -137,19 +150,6 @@ jobs:
             --markdown=/tmp/release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence
-
-      - name: Register AppTrust application version
-        run: |
-          jf apptrust version-create "$AT_APP_KEY" \
-            "${{ github.event.inputs.storefront_version }}" \
-            --source-type-application-versions \
-              "application-key=acme-shared-libs, version=${{ steps.versions.outputs.shared }}; application-key=acme-service-api, version=${{ steps.versions.outputs.api }}; application-key=acme-service-payments, version=${{ steps.versions.outputs.payments }}; application-key=acme-service-frontend, version=${{ steps.versions.outputs.frontend }}" \
-            --tag "storefront-release"
-
-          jf apptrust version-promote "$AT_APP_KEY" \
-            "${{ github.event.inputs.storefront_version }}" \
-            DEV \
-            --sync=true
 
       - name: Promote (optional)
         if: ${{ github.event.inputs.promote_to != '' }}
