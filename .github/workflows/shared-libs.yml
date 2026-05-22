@@ -104,7 +104,7 @@ jobs:
             --release-bundle-version="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
-            --markdown=./shared-libs/release-notes.md \
+            --markdown=./release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
