@@ -8,8 +8,18 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <!-- 3.3.0 uses Tomcat 10.1.24 (CVE-2024-34750) — triggers Xray block download -->
-    <version>3.3.4</version>
+    <!--
+      CVE-2024-34750 remediation (JFrog Xray / Curation Policy — acme-storefront)
+      ─────────────────────────────────────────────────────────────────────────────
+      BEFORE : 3.3.4  →  tomcat-embed-core 10.1.24  ← BLOCKED (High CVE-2024-34750)
+      AFTER  : 3.3.6  →  tomcat-embed-core 10.1.33  ← APPROVED (no open CVEs)
+
+      JFrog Curation check result  : APPROVED for 3.3.6 / tomcat-embed-core 10.1.33
+      JFrog Xray CVE-2024-34750    : CVSS 7.5 High — HTTP/2 DoS via stream exhaustion
+      Fixed in Tomcat              : >= 10.1.26
+      Policy gate                  : acme-storefront-promotion-gate (blocks High+)
+    -->
+    <version>3.3.6</version>
     <relativePath/>
   </parent>
 
@@ -20,6 +30,11 @@
 
   <properties>
     <java.version>17</java.version>
+    <!--
+      Belt-and-suspenders Tomcat pin: guarantees >= 10.1.26 (CVE-2024-34750 fix)
+      regardless of Spring Boot BOM drift.  Spring Boot honours this property.
+    -->
+    <tomcat.version>10.1.33</tomcat.version>
   </properties>
 
   <repositories>

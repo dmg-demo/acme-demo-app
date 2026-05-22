@@ -1,0 +1,88 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Copilot Cloud Agent — Pre-session setup
+#
+# PURPOSE
+#   Wire the JFrog MCP Gateway into every Copilot coding-agent session so that
+#   the JFrog security tools (curation-check, remediation-guide, Xray query,
+#   etc.) are available as first-class MCP tools without any manual steps.
+#
+# REQUIRED REPOSITORY VARIABLES  (Settings → Secrets and variables → Actions)
+#   JF_URL             https://dylanmo.jfrog.io
+#   JF_HOST            dylanmo.jfrog.io
+#
+# REQUIRED REPOSITORY SECRETS
+#   JF_ACCESS_TOKEN    A JFrog Identity Token scoped to project acme-storefront
+#                      with at least: Xray View, Curation Viewer, Read artifact
+# ─────────────────────────────────────────────────────────────────────────────
+
+steps:
+  # ── 1. Install the JFrog CLI ────────────────────────────────────────────────
+  - name: Install JFrog CLI
+    run: |
+      curl -fsSL https://install-cli.jfrog.io | sh
+      jf --version
+
+  # ── 2. Configure the CLI server profile ─────────────────────────────────────
+  #   Uses the same credentials already trusted by api.yml / payments.yml.
+  #   The server-id "dylanmo" is the stable handle used by the MCP Gateway.
+  - name: Configure JFrog CLI profile
+    env:
+      JF_URL: ${{ vars.JF_URL }}
+      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+    run: |
+      jf config add dylanmo \
+        --url "$JF_URL" \
+        --access-token "$JF_ACCESS_TOKEN" \
+        --interactive=false
+      jf config use dylanmo
+      jf rt ping
+
+  # ── 3. Register the JFrog MCP Gateway as an MCP server ─────────────────────
+  #   Writes a server-description JSON into COPILOT_AGENT_MCP_SERVER_TEMP so
+  #   the Copilot agent runtime picks it up automatically before the first turn.
+  #   The gateway proxies ALL JFrog MCP tools (Xray, Curation, Lifecycle, etc.)
+  #   using the CLI profile configured in step 2.
+  - name: Register JFrog MCP Gateway
+    env:
+      JFROG_MCP_GATEWAY_REPO: "https://releases.jfrog.io/artifactory/api/npm/coding-agents-npm/"
+      JF_PROJECT: "acme-storefront"
+    run: |
+      mkdir -p "$COPILOT_AGENT_MCP_SERVER_TEMP"
+
+      cat > "$COPILOT_AGENT_MCP_SERVER_TEMP/jfrog-mcp.json" <<EOF
+      {
+        "servers": {
+          "@jfrog/mcp-gateway": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+              "--yes",
+              "--registry", "${JFROG_MCP_GATEWAY_REPO}",
+              "@jfrog/mcp-gateway",
+              "--server", "dylanmo"
+            ],
+            "env": {
+              "_JF_MCP_LOADER_ARGS": "project=${JF_PROJECT}&mcp=@jfrog/mcp-gateway"
+            }
+          }
+        }
+      }
+      EOF
+
+      echo "✅ JFrog MCP Gateway registered at $COPILOT_AGENT_MCP_SERVER_TEMP/jfrog-mcp.json"
+      cat "$COPILOT_AGENT_MCP_SERVER_TEMP/jfrog-mcp.json"
+
+  # ── 4. Pre-warm: list available JFrog MCP tools ─────────────────────────────
+  #   Validates the gateway + credentials before the agent session starts.
+  #   A non-zero exit here surfaces credential / network issues early.
+  - name: Validate JFrog MCP Gateway (list-available)
+    env:
+      JFROG_MCP_GATEWAY_REPO: "https://releases.jfrog.io/artifactory/api/npm/coding-agents-npm/"
+      JF_PROJECT: "acme-storefront"
+    run: |
+      npx --yes \
+        --registry "$JFROG_MCP_GATEWAY_REPO" \
+        @jfrog/mcp-gateway \
+        --list-available \
+        --server dylanmo \
+        --project "$JF_PROJECT" | head -60
