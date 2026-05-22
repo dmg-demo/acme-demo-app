@@ -135,7 +135,7 @@ jobs:
           jf apptrust version-create "$AT_APP_KEY" \
             "${{ github.event.inputs.storefront_version }}" \
             --source-type-release-bundles \
-              "name=$PARENT_RB, version=${{ github.event.inputs.storefront_version }}" \
+              "name=$PARENT_RB, version=${{ github.event.inputs.storefront_version }}, project-key=$JF_PROJECT" \
             --tag "storefront-release"
 
           jf apptrust version-promote "$AT_APP_KEY" \
