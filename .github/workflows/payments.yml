@@ -103,17 +103,21 @@ jobs:
             --body "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --repo "${{ github.repository }}"
 
-      - name: Attach release notes evidence (stub)
+      - name: Attach release notes evidence
         env:
           EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
         run: |
           echo "$EVIDENCE_SIGNING_KEY" > /tmp/acme-evidence.key
-          jq -Rs '{content: .}' ./release-notes.md > /tmp/predicate.json
+          jq -n \
+            --arg version "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
+            --arg date "$(date -u +%Y-%m-%d)" \
+            '{ version: $version, build_date: $date }' > /tmp/predicate.json
           jf evd create \
             --release-bundle="$RB_NAME" \
             --release-bundle-version="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
+            --markdown=./service-payments/release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"

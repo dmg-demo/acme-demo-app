@@ -77,32 +77,54 @@ jobs:
           EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
         run: |
           echo "$EVIDENCE_SIGNING_KEY" > /tmp/acme-evidence.key
+
+          # Structured JSON predicate (machine-readable; used by policy checks and GraphQL)
           jq -n \
-            --arg version "${{ github.event.inputs.storefront_version }}" \
-            --arg date "$(date -u +%Y-%m-%d)" \
-            --arg shared  "${{ steps.versions.outputs.shared }}" \
+            --arg version  "${{ github.event.inputs.storefront_version }}" \
+            --arg date     "$(date -u +%Y-%m-%d)" \
+            --arg shared   "${{ steps.versions.outputs.shared }}" \
             --arg api      "${{ steps.versions.outputs.api }}" \
             --arg payments "${{ steps.versions.outputs.payments }}" \
             --arg frontend "${{ steps.versions.outputs.frontend }}" \
-            --rawfile shared_notes   shared-libs/release-notes.md \
-            --rawfile api_notes      service-api/release-notes.md \
-            --rawfile payments_notes service-payments/release-notes.md \
-            --rawfile frontend_notes service-frontend/release-notes.md \
             '{
               storefront_version: $version,
               release_date: $date,
               components: [
-                { name: "shared-libs",      release_bundle: "shared-libs-RB",      version: $shared,   release_notes: $shared_notes },
-                { name: "service-api",      release_bundle: "service-api-RB",      version: $api,      release_notes: $api_notes },
-                { name: "service-payments", release_bundle: "service-payments-RB", version: $payments, release_notes: $payments_notes },
-                { name: "service-frontend", release_bundle: "service-frontend-RB", version: $frontend, release_notes: $frontend_notes }
+                { name: "shared-libs",      release_bundle: "shared-libs-RB",      version: $shared },
+                { name: "service-api",      release_bundle: "service-api-RB",      version: $api },
+                { name: "service-payments", release_bundle: "service-payments-RB", version: $payments },
+                { name: "service-frontend", release_bundle: "service-frontend-RB", version: $frontend }
               ]
             }' > /tmp/predicate.json
+
+          # Human-readable markdown (rendered in the JFrog platform evidence viewer)
+          {
+            printf "# Acme Storefront ${{ github.event.inputs.storefront_version }} — Release Notes\n\n"
+            printf "**Release Date:** $(date -u +%Y-%m-%d)\n\n"
+            printf "---\n\n"
+            printf "## Components\n\n"
+            printf "| Component | Release Bundle | Version |\n"
+            printf "|-----------|---------------|----------|\n"
+            printf "| shared-libs | shared-libs-RB | ${{ steps.versions.outputs.shared }} |\n"
+            printf "| service-api | service-api-RB | ${{ steps.versions.outputs.api }} |\n"
+            printf "| service-payments | service-payments-RB | ${{ steps.versions.outputs.payments }} |\n"
+            printf "| service-frontend | service-frontend-RB | ${{ steps.versions.outputs.frontend }} |\n\n"
+            printf "---\n\n"
+            cat shared-libs/release-notes.md
+            printf "\n\n---\n\n"
+            cat service-api/release-notes.md
+            printf "\n\n---\n\n"
+            cat service-payments/release-notes.md
+            printf "\n\n---\n\n"
+            cat service-frontend/release-notes.md
+          } > /tmp/release-notes.md
+
           jf evd create \
             --release-bundle="$PARENT_RB" \
             --release-bundle-version="${{ github.event.inputs.storefront_version }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes-rollup/v1 \
+            --markdown=/tmp/release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
