@@ -1,4 +1,8 @@
-# service-frontend 2.1.0
+# service-frontend 2.1.1
+
+## Improvements
+- Updated signing key to acme-prod
+
 
 ## New Features
 - Redesigned product listing page with lazy-loaded images — LCP improved by ~40 %

@@ -1,4 +1,8 @@
-# service-api 3.4.0
+# service-api 3.4.1
+
+## Improvements
+- Updated signing key to acme-prod
+
 
 ## New Features
 - New `GET /api/v2/products` endpoint with cursor-based pagination and faceted filtering

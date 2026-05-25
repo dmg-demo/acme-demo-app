@@ -1,4 +1,8 @@
-# service-payments 1.8.2
+# service-payments 1.8.3
+
+## Improvements
+- Updated signing key to acme-prod
+
 
 ## New Features
 - Integrated Stripe webhook retry logic: failed payment events are now re-queued with exponential back-off
