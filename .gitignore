@@ -19,6 +19,9 @@ target/
 # JFrog
 .jfrog/
 
+# Demo scratch files
+demo.txt
+
 # macOS
 .DS_Store
 
