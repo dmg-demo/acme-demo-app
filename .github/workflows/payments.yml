@@ -119,12 +119,14 @@ jobs:
             --arg version "${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --arg date "$(date -u +%Y-%m-%d)" \
             '{ version: $version, build_date: $date }' > /tmp/predicate.json
+          sed "1s|.*|# service-payments ${{ steps.ver.outputs.version }}-${{ github.run_number }}|" \
+            release-notes.md > /tmp/release-notes.md
           jf evd create \
             --release-bundle="$RB_NAME" \
             --release-bundle-version="${{ steps.ver.outputs.version }}-${{ github.run_number }}" \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
-            --markdown=./release-notes.md \
+            --markdown=/tmp/release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"
@@ -133,7 +135,7 @@ jobs:
             --build-number=${{ github.run_number }} \
             --predicate=/tmp/predicate.json \
             --predicate-type=https://acme.dev/release-notes/v1 \
-            --markdown=./release-notes.md \
+            --markdown=/tmp/release-notes.md \
             --key=/tmp/acme-evidence.key \
             --key-alias=acme-evidence \
             --project="$JF_PROJECT"

@@ -124,13 +124,13 @@ jobs:
             printf '| service-payments | service-payments-RB | %s |\n' "${{ steps.versions.outputs.payments }}"
             printf '| service-frontend | service-frontend-RB | %s |\n\n' "${{ steps.versions.outputs.frontend }}"
             printf '%s\n\n' '---'
-            cat shared-libs/release-notes.md
+            sed "1s|.*|# shared-libs ${{ steps.versions.outputs.shared }}|" shared-libs/release-notes.md
             printf '\n\n%s\n\n' '---'
-            cat service-api/release-notes.md
+            sed "1s|.*|# service-api ${{ steps.versions.outputs.api }}|" service-api/release-notes.md
             printf '\n\n%s\n\n' '---'
-            cat service-payments/release-notes.md
+            sed "1s|.*|# service-payments ${{ steps.versions.outputs.payments }}|" service-payments/release-notes.md
             printf '\n\n%s\n\n' '---'
-            cat service-frontend/release-notes.md
+            sed "1s|.*|# service-frontend ${{ steps.versions.outputs.frontend }}|" service-frontend/release-notes.md
           } > /tmp/release-notes.md
 
           jf evd create \
