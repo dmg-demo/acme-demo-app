@@ -1,0 +1,9 @@
+- params:
+    scan:
+      projects:
+        - workingDirs:
+            - "service-api"
+        - workingDirs:
+            - "service-payments"
+        - workingDirs:
+            - "shared-libs"
