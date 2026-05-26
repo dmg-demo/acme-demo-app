@@ -36,5 +36,5 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}
           JF_PROJECT: acme-storefront
-          JF_UPLOAD_PR_SECURITY_RESULTS_TO_VCS: "true"
-          JF_PR_ADD_SUCCESS_COMMENT: "true"
+          #JF_UPLOAD_PR_SECURITY_RESULTS_TO_VCS: "true"
+          #JF_PR_ADD_SUCCESS_COMMENT: "true"
