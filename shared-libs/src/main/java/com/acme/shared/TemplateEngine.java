@@ -1,6 +1,7 @@
 package com.acme.shared;
 
 import org.apache.commons.text.StringSubstitutor;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,11 +14,13 @@ import java.util.Map;
 public final class TemplateEngine {
 
     // ----------------------------------------------------------------
-    // SECRETS DEMO: hard-coded example credentials (not real — these
-    // are the canonical AWS documentation placeholder values)
+    // SECRETS DEMO: hard-coded service credentials.
+    // NOTE: AKIAIOSFODNN7EXAMPLE is the official AWS docs placeholder
+    // and is allowlisted by most scanners. Using realistic-format fakes
+    // that are NOT on the allowlist.
     // ----------------------------------------------------------------
-    private static final String EXAMPLE_AWS_ACCESS_KEY = "AKIAIOSFODNN7EXAMPLE";
-    private static final String EXAMPLE_AWS_SECRET_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+    private static final String DB_PASSWORD = "Sup3r$ecretD3m0Key_acme!9x2z";
+    private static final String INTERNAL_TOKEN = "acme-svc-token-xK9mQ3vL8nP5rT2wY6uE4oI7jH1";
 
     private TemplateEngine() {}
 
@@ -32,12 +35,23 @@ public final class TemplateEngine {
     }
 
     // ----------------------------------------------------------------
-    // SAST DEMO: SQL injection via string concatenation
-    // User-supplied username is concatenated directly into the query
-    // instead of being passed as a prepared-statement parameter.
+    // SAST DEMO: Command injection
+    // System.getProperty() is a recognised taint SOURCE in JFrog SAST.
+    // The unsanitised value flows into Runtime.exec() — a known SINK.
     // ----------------------------------------------------------------
-    public static ResultSet findUser(Connection conn, String username) throws SQLException {
-        String query = "SELECT * FROM users WHERE username = '" + username + "'";
+    public static void generateReport() throws IOException {
+        String reportType = System.getProperty("report.type");
+        Runtime.getRuntime().exec(new String[]{"bash", "-c", "generate-report.sh " + reportType});
+    }
+
+    // ----------------------------------------------------------------
+    // SAST DEMO: SQL injection
+    // System.getenv() is a recognised taint SOURCE in JFrog SAST.
+    // The unsanitised value flows into executeQuery() — a known SINK.
+    // ----------------------------------------------------------------
+    public static ResultSet findUser(Connection conn) throws SQLException {
+        String userId = System.getenv("QUERY_USER_ID");
+        String query = "SELECT * FROM users WHERE id = '" + userId + "'";
         return conn.createStatement().executeQuery(query);
     }
 }
