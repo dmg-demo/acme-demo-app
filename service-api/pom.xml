@@ -40,6 +40,12 @@
       <artifactId>shared-libs</artifactId>
       <version>${shared-libs.version}</version>
     </dependency>
+    <!-- TEST ONLY: Log4Shell (CVE-2021-44228) — remove before merging -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.14.1</version>
+    </dependency>
   </dependencies>
 
   <build>
