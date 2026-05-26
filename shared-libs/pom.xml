@@ -16,6 +16,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <!-- CVE-2022-42889 (Text4Shell) — intentionally vulnerable for Frogbot SCA demo -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.9</version>
+    </dependency>
+  </dependencies>
+
   <distributionManagement>
     <repository>
       <id>artifactory</id>
