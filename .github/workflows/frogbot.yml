@@ -11,6 +11,8 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
+  id-token: write
   pull-requests: write
   contents: write
   security-events: write
@@ -18,7 +20,6 @@ permissions:
 jobs:
   frogbot-scan:
     runs-on: ubuntu-latest
-    environment: frogbot
     strategy:
       matrix:
         branch: ["main"]
