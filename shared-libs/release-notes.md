@@ -1,7 +1,7 @@
 # shared-libs 1.3.0
 
 ## Improvements
-- Updated signing key to acme-prod
+- Updated signing key to acme-prod.
 
 ## New Features
 - Added `Greeter.greet()` utility for personalised welcome messages across all services
