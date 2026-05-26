@@ -79,7 +79,7 @@ jobs:
           jf rt bp  shared-libs ${{ github.run_number }} --project="$JF_PROJECT"
 
       - name: Scan build
-        run: jf build-scan shared-libs ${{ github.run_number }} --project="$JF_PROJECT"
+        run: jf build-scan shared-libs ${{ github.run_number }}
 
       - name: Create Release Bundle v2
         run: |
